@@ -156,6 +156,7 @@ install(DIRECTORY ${RXCPP_DIR}/Rx/v2/src/rxcpp/ DESTINATION include/rxcpp
 # Here we are exporting TARGETS so that other projects can import rxcpp
 # just with find_package(rxcpp CONFIG) after rxcpp is installed into system by "make install".
 add_library(rxcpp INTERFACE)
+add_library(rxcpp::rxcpp ALIAS rxcpp)
 
 target_compile_definitions(rxcpp
     INTERFACE
