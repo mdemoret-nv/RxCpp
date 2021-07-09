@@ -1,6 +1,9 @@
 FIND_PACKAGE(Threads)
 
 option(RX_USE_EXCEPTIONS "Use C++ exceptions" ON)
+option(RXCPP_USE_FIBERS "Make the default scheduler fiber aware" OFF)
+option(RX_BUILD_TESTING "Whether or not to build tests" ON)
+option(RX_BUILD_EXAMPLES "Whether or not to build examples" ON)
 
 # define some compiler settings
 

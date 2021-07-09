@@ -4,6 +4,8 @@ project(rxcpp VERSION 2.2.4 LANGUAGES C CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+find_package(Boost REQUIRED COMPONENTS fiber)
+
 # define some folders
 
 get_filename_component(RXCPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PATH)
@@ -11,18 +13,22 @@ get_filename_component(RXCPP_DIR "${RXCPP_DIR}" PATH)
 
 MESSAGE( STATUS "RXCPP_DIR: " ${RXCPP_DIR} )
 
-add_subdirectory(${RXCPP_DIR}/Rx/v2/test ${CMAKE_CURRENT_BINARY_DIR}/test)
+if(RX_BUILD_TESTING)
+    add_subdirectory(${RXCPP_DIR}/Rx/v2/test ${CMAKE_CURRENT_BINARY_DIR}/test)
+endif()
 
 add_subdirectory(${RXCPP_DIR}/projects/doxygen ${CMAKE_CURRENT_BINARY_DIR}/projects/doxygen)
 
-set(EXAMPLES_DIR ${RXCPP_DIR}/Rx/v2/examples)
+if(RX_BUILD_EXAMPLES)
+    set(EXAMPLES_DIR ${RXCPP_DIR}/Rx/v2/examples)
 
-add_subdirectory(${EXAMPLES_DIR}/cep ${CMAKE_CURRENT_BINARY_DIR}/examples/cep)
-add_subdirectory(${EXAMPLES_DIR}/stop ${CMAKE_CURRENT_BINARY_DIR}/examples/stop)
-add_subdirectory(${EXAMPLES_DIR}/linesfrombytes ${CMAKE_CURRENT_BINARY_DIR}/examples/linesfrombytes)
-add_subdirectory(${EXAMPLES_DIR}/println ${CMAKE_CURRENT_BINARY_DIR}/examples/println)
-add_subdirectory(${EXAMPLES_DIR}/pythagorian ${CMAKE_CURRENT_BINARY_DIR}/examples/pythagorian)
-add_subdirectory(${EXAMPLES_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/examples/tests)
+    # add_subdirectory(${EXAMPLES_DIR}/cep ${CMAKE_CURRENT_BINARY_DIR}/examples/cep)
+    # add_subdirectory(${EXAMPLES_DIR}/stop ${CMAKE_CURRENT_BINARY_DIR}/examples/stop)
+    # add_subdirectory(${EXAMPLES_DIR}/linesfrombytes ${CMAKE_CURRENT_BINARY_DIR}/examples/linesfrombytes)
+    # add_subdirectory(${EXAMPLES_DIR}/println ${CMAKE_CURRENT_BINARY_DIR}/examples/println)
+    # add_subdirectory(${EXAMPLES_DIR}/pythagorian ${CMAKE_CURRENT_BINARY_DIR}/examples/pythagorian)
+    # add_subdirectory(${EXAMPLES_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/examples/tests)
+endif()
 
 # The list of RxCpp source files. Please add every new file to this list
 set(RX_SOURCES
@@ -148,12 +154,22 @@ install(DIRECTORY ${RXCPP_DIR}/Rx/v2/src/rxcpp/ DESTINATION include/rxcpp
         FILES_MATCHING PATTERN "*.hpp")
 
 # Here we are exporting TARGETS so that other projects can import rxcpp
-# just with find_package(rxcpp CONFIG) after rxcpp is installed into system by "make install". 
+# just with find_package(rxcpp CONFIG) after rxcpp is installed into system by "make install".
 add_library(rxcpp INTERFACE)
+
+target_compile_definitions(rxcpp
+    INTERFACE
+        $<$<BOOL:RXCPP_USE_FIBERS>:RXCPP_USE_FIBERS>
+)
 
 target_include_directories(rxcpp INTERFACE
     $<BUILD_INTERFACE:${RXCPP_DIR}/Rx/v2/src/>
     $<INSTALL_INTERFACE:include/rxcpp>
+)
+
+target_link_libraries(rxcpp
+    INTERFACE
+        $<$<BOOL:RXCPP_USE_FIBERS>:Boost::fiber>
 )
 
 install(TARGETS rxcpp EXPORT rxcppConfig)

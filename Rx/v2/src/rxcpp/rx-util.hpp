@@ -15,6 +15,11 @@
 #endif
 #endif
 
+#if defined(RXCPP_USE_FIBERS)
+#undef RXCPP_THREAD_LOCAL
+#include <boost/fiber/fss.hpp>
+#endif
+
 #if !defined(RXCPP_DELETE)
 #if defined(_MSC_VER)
 #define RXCPP_DELETE __pragma(warning(disable: 4822)) =delete
@@ -745,6 +750,45 @@ private:
 }
 
 #if !defined(RXCPP_THREAD_LOCAL)
+#if defined(RXCPP_USE_FIBERS)
+template<typename T>
+class thread_local_storage
+{
+private:
+    boost::fibers::fiber_specific_ptr<T> key;
+
+public:
+    thread_local_storage():
+        key([](T* x){})
+    {
+    }
+
+    ~thread_local_storage()
+    {
+    }
+
+    thread_local_storage& operator =(T* p)
+    {
+        key.reset(p);
+        return *this;
+    }
+
+    bool operator !()
+    {
+        return key.get() == nullptr;
+    }
+
+    T* operator ->()
+    {
+        return key.operator->();
+    }
+
+    T* get()
+    {
+        return key.get();
+    }
+};
+#else
 template<typename T>
 class thread_local_storage
 {
@@ -783,6 +827,7 @@ public:
         return static_cast<T*>(pthread_getspecific(key));
     }
 };
+#endif
 #endif
 
 template<typename, typename C = types_checked>
