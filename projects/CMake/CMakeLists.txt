@@ -187,3 +187,10 @@ write_basic_package_version_file("${PROJECT_BINARY_DIR}/rxcppConfigVersion.cmake
         AnyNewerVersion
 )
 install(FILES "${PROJECT_BINARY_DIR}/rxcppConfigVersion.cmake" DESTINATION share/rxcpp/cmake)
+
+# Finally, export the config from the build tree for consumers of this repo directly
+export(
+    EXPORT rxcppConfig
+    NAMESPACE rxcpp::
+    FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake
+)
