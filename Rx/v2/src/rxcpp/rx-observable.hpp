@@ -1782,8 +1782,6 @@ public:
     }
 };
 
-}
-
 //
 // support range() >> filter() >> subscribe() syntax
 // '>>' is spelled 'stream'
@@ -1804,4 +1802,5 @@ auto operator | (const rxcpp::observable<T, SourceOperator>& source, OperatorFac
     return      source.op(std::forward<OperatorFactory>(of));
 }
 
+}
 #endif
