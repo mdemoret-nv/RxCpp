@@ -43,7 +43,8 @@ struct map
 {
     typedef rxu::decay_t<T> source_value_type;
     typedef rxu::decay_t<Selector> select_type;
-    typedef decltype((*(select_type*)nullptr)(*(source_value_type*)nullptr)) value_type;
+    // typedef decltype((*(select_type*)nullptr)(*(source_value_type*)nullptr)) value_type;
+    typedef decltype((*(select_type*)nullptr)(std::move(std::declval<source_value_type&>()))) value_type;
     select_type selector;
 
     map(select_type s)
@@ -55,7 +56,7 @@ struct map
     struct map_observer
     {
         typedef map_observer<Subscriber> this_type;
-        typedef decltype((*(select_type*)nullptr)(*(source_value_type*)nullptr)) value_type;
+        typedef decltype((*(select_type*)nullptr)(std::move(std::declval<source_value_type&>()))) value_type;
         typedef rxu::decay_t<Subscriber> dest_type;
         typedef observer<source_value_type, this_type> observer_type;
         dest_type dest;
