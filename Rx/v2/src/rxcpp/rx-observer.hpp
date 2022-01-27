@@ -9,7 +9,6 @@
 
 namespace rxcpp {
 
-
 template<class T>
 struct observer_base
 {
@@ -114,13 +113,21 @@ struct OnCompletedForward<State, void>
 template<class T, class F>
 struct is_on_next_of
 {
+    struct error {};
+    struct l1 : error {};
+    struct l2 : error {};
+
     struct not_void {};
+    // template<class CT, class CF>
+    // static auto check(int) -> decltype((*(CF*)nullptr)(*(CT*)nullptr));
     template<class CT, class CF>
-    static auto check(int) -> decltype((*(CF*)nullptr)(*(CT*)nullptr));
+    static auto check(l2, int) -> decltype((*(CF*)nullptr)(std::move(std::declval<CT&>())));
+    template<class CT, class CF>
+    static auto check(l1, int) -> decltype((*(CF*)nullptr)(*(CT*)nullptr));
     template<class CT, class CF>
     static not_void check(...);
 
-    typedef decltype(check<T, rxu::decay_t<F>>(0)) detail_result;
+    typedef decltype(check<T, rxu::decay_t<F>>(l2{}, 0)) detail_result;
     static const bool value = std::is_same<detail_result, void>::value;
 };
 
@@ -344,7 +351,7 @@ public:
 namespace detail
 {
 
-template<class T>
+template<class T, typename = void>
 struct virtual_observer : public std::enable_shared_from_this<virtual_observer<T>>
 {
     virtual ~virtual_observer() {}
@@ -354,7 +361,16 @@ struct virtual_observer : public std::enable_shared_from_this<virtual_observer<T
     virtual void on_completed() const {};
 };
 
-template<class T, class Observer>
+template<class T>
+struct virtual_observer<T, std::enable_if_t<!std::is_copy_constructible_v<T>>> : public std::enable_shared_from_this<virtual_observer<T>>
+{
+    virtual ~virtual_observer() {}
+    virtual void on_next(T&&) const {};
+    virtual void on_error(rxu::error_ptr) const {};
+    virtual void on_completed() const {};
+};
+
+template<class T, class Observer, typename = void>
 struct specific_observer : public virtual_observer<T>
 {
     explicit specific_observer(Observer o)
@@ -366,6 +382,26 @@ struct specific_observer : public virtual_observer<T>
     void on_next(const T& t) const override {
         destination.on_next(t);
     }
+    void on_next(T&& t) const override{
+        destination.on_next(std::move(t));
+    }
+    void on_error(rxu::error_ptr e) const override{
+        destination.on_error(e);
+    }
+    void on_completed() const override {
+        destination.on_completed();
+    }
+};
+
+template<class T, class Observer>
+struct specific_observer<T, Observer, std::enable_if_t<!std::is_copy_constructible_v<T>>> : public virtual_observer<T>
+{
+    explicit specific_observer(Observer o)
+        : destination(std::move(o))
+    {
+    }
+
+    Observer destination;
     void on_next(T&& t) const override{
         destination.on_next(std::move(t));
     }
