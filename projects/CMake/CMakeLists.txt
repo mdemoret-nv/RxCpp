@@ -13,13 +13,11 @@ get_filename_component(RXCPP_DIR "${RXCPP_DIR}" PATH)
 
 MESSAGE( STATUS "RXCPP_DIR: " ${RXCPP_DIR} )
 
-if(RX_BUILD_TESTING)
+if (NOT ${RXCPP_DISABLE_TESTS_AND_EXAMPLES})
     add_subdirectory(${RXCPP_DIR}/Rx/v2/test ${CMAKE_CURRENT_BINARY_DIR}/test)
-endif()
 
-add_subdirectory(${RXCPP_DIR}/projects/doxygen ${CMAKE_CURRENT_BINARY_DIR}/projects/doxygen)
+    add_subdirectory(${RXCPP_DIR}/projects/doxygen ${CMAKE_CURRENT_BINARY_DIR}/projects/doxygen)
 
-if(RX_BUILD_EXAMPLES)
     set(EXAMPLES_DIR ${RXCPP_DIR}/Rx/v2/examples)
 
     add_subdirectory(${EXAMPLES_DIR}/cep ${CMAKE_CURRENT_BINARY_DIR}/examples/cep)
@@ -28,7 +26,7 @@ if(RX_BUILD_EXAMPLES)
     add_subdirectory(${EXAMPLES_DIR}/println ${CMAKE_CURRENT_BINARY_DIR}/examples/println)
     add_subdirectory(${EXAMPLES_DIR}/pythagorian ${CMAKE_CURRENT_BINARY_DIR}/examples/pythagorian)
     add_subdirectory(${EXAMPLES_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/examples/tests)
-endif()
+endif ()
 
 # The list of RxCpp source files. Please add every new file to this list
 set(RX_SOURCES

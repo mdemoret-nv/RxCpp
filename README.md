@@ -61,7 +61,7 @@ int main()
                     }) |
                 as_dynamic();
         }) |
-        tap([](vector<uint8_t>& v){
+        tap([](const vector<uint8_t>& v){
             // print input packet of bytes
             copy(v.begin(), v.end(), ostream_iterator<long>(cout, " "));
             cout << endl;
@@ -192,14 +192,14 @@ RxCpp uses CMake to create build files for several platforms and IDE's
 ```shell
 mkdir projects/build
 cd projects/build
-cmake -G"Xcode" ../CMake -B.
+cmake -G"Xcode" -DRXCPP_DISABLE_TESTS_AND_EXAMPLES=0 ../CMake -B.
 ```
 
 #### Visual Studio 2017
 ```batch
 mkdir projects\build
 cd projects\build
-cmake -G "Visual Studio 15" ..\CMake\
+cmake -G "Visual Studio 15" -DRXCPP_DISABLE_TESTS_AND_EXAMPLES=0 ..\CMake\
 msbuild Project.sln
 ```
 
@@ -209,7 +209,7 @@ msbuild Project.sln
 ```shell
 mkdir projects/build
 cd projects/build
-cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo -B. ../CMake
+cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRXCPP_DISABLE_TESTS_AND_EXAMPLES=0 -B. ../CMake
 make
 ```
 
@@ -217,7 +217,7 @@ make
 ```shell
 mkdir projects/build
 cd projects/build
-cmake -G"Unix Makefiles" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXE_LINKER_FLAGS="-stdlib=libc++" -B. ../CMake
+cmake -G"Unix Makefiles" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXE_LINKER_FLAGS="-stdlib=libc++" -DRXCPP_DISABLE_TESTS_AND_EXAMPLES=0 -B. ../CMake
 make
 ```
 
@@ -225,7 +225,7 @@ make
 ```shell
 mkdir projects/build
 cd projects/build
-cmake -G"Unix Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=RelWithDebInfo -B. ../CMake
+cmake -G"Unix Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRXCPP_DISABLE_TESTS_AND_EXAMPLES=0 -B. ../CMake
 make
 ```
 
@@ -233,7 +233,7 @@ make
 ```batch
 mkdir projects\build
 cd projects\build
-cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo -B. ..\CMake
+cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRXCPP_DISABLE_TESTS_AND_EXAMPLES=0 -B. ..\CMake
 nmake
 ```
 
