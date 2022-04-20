@@ -135,11 +135,12 @@ struct is_on_next_of
     struct not_void {};
     template<class CT, class CF>
     static auto check(l2, int) -> decltype(std::declval<CF>()(std::move(std::declval<CT&>())));
+    template<class CT, class CF>
     static auto check(l1, int) -> decltype(std::declval<CF>()(std::declval<CT>()));
     template<class CT, class CF>
     static not_void check(...);
 
-    using detail_result = decltype(check<T, rxu::decay_t < F>>(0));
+    using detail_result = decltype(check<T, rxu::decay_t < F>>(l2{}, 0));
     static const bool value = std::is_same_v<detail_result, void>;
 };
 
