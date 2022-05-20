@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <exception>
+#include <stdexcept>
 #if !defined(RXCPP_RX_OBSERVER_HPP)
 #define RXCPP_RX_OBSERVER_HPP
 
@@ -39,9 +41,10 @@ struct OnNextEmpty
 };
 struct OnErrorEmpty
 {
-    void operator()(rxu::error_ptr) const {
+    void operator()(rxu::error_ptr ptr) const {
         // error implicitly ignored, abort
-        std::terminate();
+        std::rethrow_exception(ptr);
+        // std::terminate();
     }
 };
 struct OnErrorIgnore
