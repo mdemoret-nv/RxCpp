@@ -43,8 +43,7 @@ struct OnErrorEmpty
 {
     void operator()(rxu::error_ptr ptr) const {
         // error implicitly ignored, abort
-        std::rethrow_exception(ptr);
-        // std::terminate();
+        std::rethrow_exception(ptr); 
     }
 };
 struct OnErrorIgnore
